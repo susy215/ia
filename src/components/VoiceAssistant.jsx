@@ -340,7 +340,7 @@ const VoiceAssistant = () => {
                     </button>
 
                     {/* AI Badge - always visible */}
-                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-white/20 animate-bounce-slow">
+                    <div className="absolute -bottom-2 right-0 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-white/20 animate-bounce-slow">
                         AI
                     </div>
 
@@ -366,7 +366,7 @@ const VoiceAssistant = () => {
                                 <p className="text-xs text-gray-300 mb-2">
                                     Navega con tu voz en español
                                 </p>
-                                <div className="flex items-center gap-2 text-xs">
+                                <div className="hidden md:flex items-center gap-2 text-xs">
                                     <kbd className="px-2 py-1 bg-slate-700 rounded border border-slate-600">Ctrl</kbd>
                                     <span className="text-gray-400">+</span>
                                     <kbd className="px-2 py-1 bg-slate-700 rounded border border-slate-600">Shift</kbd>
