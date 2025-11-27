@@ -1,0 +1,143 @@
+# Guía de Integración Frontend (React/Vite) - Smart-Coop
+
+Esta guía detalla cómo consumir la API del backend Django para construir el Dashboard y los módulos de IA.
+
+## 1. Configuración Inicial
+
+### Base URL
+Todas las peticiones deben ir a: `http://localhost:8000/api/`
+
+### Autenticación
+El backend está configurado en modo "API First" (abierto para desarrollo).
+*   No se requiere token por ahora.
+*   En producción, implementaremos JWT.
+
+## 2. Dashboard Principal (Admin)
+
+**Endpoint:** `GET /api/finanzas/dashboard/summary/`
+
+**Uso en React:**
+Este endpoint devuelve todo lo necesario para la pantalla de inicio.
+
+**Estructura JSON de Respuesta:**
+```json
+{
+    "kpis": {
+        "total_socios": 12,
+        "prestamos_activos": 5,
+        "dinero_colocado": 45000.00,
+        "alertas_activas": 2
+    },
+    "alertas_riesgo": [
+        {
+            "cultivo__especie": "Maíz",
+            "cultivo__parcela__nombre": "La Paz",
+            "accion_recomendada": "⚠️ ALERTA: Probabilidad de heladas..."
+        }
+    ],
+    "actividad_ia": [
+        {
+            "parcela__nombre": "Sector Norte",
+            "especie_sugerida": "Tomate",
+            "rentabilidad_estimada": 25000.00,
+            "fecha_generacion": "2023-11-25T..."
+        }
+    ],
+    "distribucion_prestamos": [
+        {"estado": "PENDIENTE", "total": 3},
+        {"estado": "APROBADO", "total": 5}
+    ]
+}
+```
+
+**Componentes Sugeridos:**
+*   **KPI Cards**: 4 tarjetas superiores mostrando los números de `kpis`.
+*   **Tabla de Alertas**: Lista roja/amarilla con `alertas_riesgo`.
+*   **Gráfico de Torta (Pie Chart)**: Usar `distribucion_prestamos` para mostrar el estado de la cartera.
+*   **Feed de Actividad**: Lista simple con `actividad_ia`.
+
+## 3. Módulos de IA (Smart Farming)
+
+### Caso 1: Recomendación de Siembra
+**Flujo:**
+1.  El usuario selecciona una [Parcela](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/agri_data/models.py#7-27) (Listar desde `/api/agri-data/parcelas/`).
+2.  Botón "Analizar Suelo con IA".
+3.  **POST** a `/api/smart-farming/ia/recomendacion/generar/`
+    *   Body: `{ "parcela_id": 1 }`
+4.  Mostrar resultado (Especie sugerida, Rentabilidad, Gráfico de Confianza).
+
+### Caso 2: Plan de Fertilización
+**Flujo:**
+1.  El usuario selecciona un [Cultivo](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/agri_data/models.py#28-41) activo (Listar desde `/api/agri-data/cultivos/`).
+2.  Botón "Generar Plan Nutricional".
+3.  **POST** a `/api/smart-farming/ia/fertilizacion/generar/`
+    *   Body: `{ "cultivo_id": 3 }`
+4.  **Visualización**: Renderizar un **Timeline** o **Calendario** con [detalle_aplicaciones](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/smart_farming/admin.py#26-29).
+
+### Caso 3: Estimación de Cosecha
+**Flujo:**
+1.  El usuario selecciona un [Cultivo](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/agri_data/models.py#28-41).
+2.  Botón "Proyectar Cosecha".
+3.  **POST** a `/api/smart-farming/ia/cosecha/generar/`
+    *   Body: `{ "cultivo_id": 3 }`
+4.  **Visualización**:
+    *   Tarjeta grande con la `fecha_optima`.
+    *   Indicador de Riesgo (Semáforo: Verde/Amarillo/Rojo) basado en `riesgo_clima`.
+    *   Precio proyectado vs Precio actual.
+
+## 4. Gestión de Préstamos (Finanzas)
+
+**Endpoint:** `/api/finanzas/prestamos/`
+
+**Tip Pro:**
+Al crear un préstamo, el frontend puede buscar si existe una [RecomendacionSiembra](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/smart_farming/models.py#4-14) para esa parcela y enviarla en el campo [vinculo_ia](file:///C:/Users/httpReen/Desktop/Cooperativa/IA/finanzas/admin.py#12-16). Esto permite al Admin ver que el préstamo está respaldado por la IA.
+
+## 5. Librerías Recomendadas (React)
+*   **Gráficos**: `recharts` o `chart.js`.
+*   **Mapas**: `react-leaflet` (para mostrar lat/long de parcelas).
+*   **UI**: `Tailwind CSS` + `Headless UI` o `Material UI`.
+## 6. Reportes y Exportación
+
+### A. Reporte Gerencial Completo (Excel)
+**Endpoint:** `GET /api/finanzas/reportes/gerencial/`
+**Descripción:** Archivo `.xlsx` con 3 hojas (Resumen, Préstamos, Alertas).
+
+### B. Reporte de Préstamos (CSV)
+**Endpoint:** `GET /api/finanzas/reportes/prestamos-csv/`
+**Descripción:** Archivo `.csv` ligero con el listado de todos los préstamos. Ideal para importar en otros sistemas.
+
+### D. Reporte Gerencial (PDF)
+**Endpoint:** `GET /api/finanzas/reportes/gerencial-pdf/`
+**Descripción:** Documento PDF profesional listo para imprimir.
+
+---
+
+### Ejemplo de Implementación (React)
+
+Usa esta función genérica para descargar cualquiera de los reportes:
+
+```javascript
+const descargarArchivo = async (url, nombreArchivo) => {
+  try {
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) throw new Error('Error en la descarga');
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error('Error:', error);
+    alert('No se pudo descargar el archivo.');
+  }
+};
+
+// Uso en botones:
+// <button onClick={() => descargarArchivo('http://localhost:8000/api/finanzas/reportes/gerencial/', 'Reporte_Gerencial.xlsx')}>Excel</button>
+// <button onClick={() => descargarArchivo('http://localhost:8000/api/finanzas/reportes/gerencial-pdf/', 'Reporte_Gerencial.pdf')}>PDF</button>
+```
