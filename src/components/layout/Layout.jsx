@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import VoiceAssistant from '../VoiceAssistant';
+import PWAInstallButton from '../PWAInstallButton';
 
 export default function Layout() {
     return (
@@ -24,6 +25,7 @@ export default function Layout() {
                 </main>
                 <BottomNav />
                 <VoiceAssistant />
+                <PWAInstallButton />
             </div>
         </div>
     );
