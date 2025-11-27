@@ -95,7 +95,7 @@ body {
     animation: bounce-slow 2s ease-in-out infinite;
 }
 
-/* Voice Assistant Waveform Animation */
+/* Voice Assistant Animations */
 @keyframes waveform {
 
     0%,
@@ -110,4 +110,20 @@ body {
 
 .animate-waveform {
     animation: waveform 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
 }

@@ -226,7 +226,7 @@ const VoiceAssistant = () => {
         <>
             {/* Transcript Panel */}
             {showPanel && (
-                <div className="fixed bottom-32 right-4 md:bottom-24 md:right-24 z-40 w-80 md:w-96 animate-slide-up">
+                <div className="fixed bottom-36 right-4 left-4 md:bottom-24 md:left-auto md:right-24 z-40 md:w-96 animate-slide-up">
                     <div className="glass-card rounded-2xl p-4 shadow-2xl border border-white/10">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-3">
@@ -289,10 +289,21 @@ const VoiceAssistant = () => {
             )}
 
             {/* Floating Microphone Button */}
-            <div className="fixed bottom-8 right-24 md:right-32 z-50">
+            <div className="fixed bottom-24 right-4 md:bottom-8 md:right-32 z-50">
                 <div className="relative group">
-                    {/* Glow effect */}
-                    <div className={`absolute inset-0 bg-gradient-to-r ${getStatusColor()} rounded-full blur-xl opacity-60 transition-opacity ${isListening ? 'animate-pulse opacity-80' : ''
+                    {/* Animated particles background */}
+                    <div className="absolute -inset-4 opacity-30">
+                        <div className="absolute top-0 left-0 w-2 h-2 bg-emerald-400 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+                        <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}></div>
+                        <div className="absolute top-1/2 right-0 w-1 h-1 bg-green-400 rounded-full animate-ping" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
+                    </div>
+
+                    {/* Glow effect - always visible with subtle pulse */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${getStatusColor()} rounded-full blur-xl transition-all duration-500 ${isListening ? 'opacity-80 animate-pulse' : 'opacity-40 animate-pulse-slow'
+                        }`}></div>
+
+                    {/* Outer ring decoration */}
+                    <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${isListening ? 'border-emerald-400 scale-110' : 'border-emerald-500/30 scale-100'
                         }`}></div>
 
                     {/* Main Button */}
@@ -300,26 +311,72 @@ const VoiceAssistant = () => {
                         onClick={toggleListening}
                         className={`relative bg-gradient-to-r ${getStatusColor()} text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group-hover:rotate-12`}
                         aria-label={isListening ? 'Detener grabación' : 'Activar asistente de voz'}
-                        title="Asistente de Voz (Ctrl+Shift+V)"
+                        title="Asistente de Voz IA (Ctrl+Shift+V)"
                     >
+                        {/* Inner glow */}
+                        <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
                         {getStatusIcon()}
 
                         {/* Pulse ring when listening */}
                         {isListening && (
-                            <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-30"></span>
+                            <>
+                                <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-30"></span>
+                                <span className="absolute inset-0 rounded-full bg-emerald-300 animate-ping opacity-20" style={{ animationDelay: '0.3s' }}></span>
+                            </>
                         )}
 
                         {/* Recording indicator */}
                         {isListening && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse border-2 border-white"></div>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse border-2 border-white shadow-lg">
+                                <div className="absolute inset-0 rounded-full bg-red-400 animate-ping"></div>
+                            </div>
                         )}
+
+                        {/* Sparkle effect on hover */}
+                        <div className="absolute -top-1 -left-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Sparkles className="w-3 h-3 text-yellow-300 animate-pulse" />
+                        </div>
                     </button>
 
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full right-0 mb-3 w-48 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-xs">
-                        <p className="font-semibold mb-1">Asistente de Voz</p>
-                        <p className="text-gray-300">Click o Ctrl+Shift+V</p>
-                        <div className="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-2 h-2 bg-slate-800"></div>
+                    {/* AI Badge - always visible */}
+                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-white/20 animate-bounce-slow">
+                        AI
+                    </div>
+
+                    {/* Status indicator dot */}
+                    <div className={`absolute -top-1 -left-1 w-3 h-3 rounded-full border-2 border-white shadow-lg transition-colors ${isListening ? 'bg-red-500 animate-pulse' :
+                        status === 'processing' ? 'bg-yellow-500 animate-pulse' :
+                            status === 'success' ? 'bg-green-500' :
+                                status === 'error' ? 'bg-red-500' :
+                                    'bg-emerald-500 animate-pulse-slow'
+                        }`}></div>
+
+                    {/* Enhanced Tooltip */}
+                    <div className="absolute bottom-full right-0 mb-4 w-64 bg-gradient-to-br from-slate-800 to-slate-900 text-white p-4 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none transform group-hover:translate-y-0 translate-y-2 border border-emerald-500/20">
+                        <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
+                                <Mic className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="font-bold text-base mb-1 flex items-center gap-2">
+                                    Asistente de Voz IA
+                                    <Sparkles className="w-3 h-3 text-emerald-400" />
+                                </h4>
+                                <p className="text-xs text-gray-300 mb-2">
+                                    Navega con tu voz en español
+                                </p>
+                                <div className="flex items-center gap-2 text-xs">
+                                    <kbd className="px-2 py-1 bg-slate-700 rounded border border-slate-600">Ctrl</kbd>
+                                    <span className="text-gray-400">+</span>
+                                    <kbd className="px-2 py-1 bg-slate-700 rounded border border-slate-600">Shift</kbd>
+                                    <span className="text-gray-400">+</span>
+                                    <kbd className="px-2 py-1 bg-slate-700 rounded border border-slate-600">V</kbd>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Arrow */}
+                        <div className="absolute bottom-0 right-8 transform translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r border-b border-emerald-500/20"></div>
                     </div>
                 </div>
             </div>
