@@ -94,3 +94,20 @@ body {
 .animate-bounce-slow {
     animation: bounce-slow 2s ease-in-out infinite;
 }
+
+/* Voice Assistant Waveform Animation */
+@keyframes waveform {
+
+    0%,
+    100% {
+        transform: scaleY(0.3);
+    }
+
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+.animate-waveform {
+    animation: waveform 0.8s ease-in-out infinite;
+}
