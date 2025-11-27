@@ -227,7 +227,7 @@ const VoiceAssistant = () => {
             {/* Transcript Panel */}
             {showPanel && (
                 <div className="fixed bottom-36 right-4 left-4 md:bottom-24 md:left-auto md:right-24 z-40 md:w-96 animate-slide-up">
-                    <div className="glass-card rounded-2xl p-4 shadow-2xl border border-white/10">
+                    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 shadow-2xl border border-emerald-500/30 backdrop-blur-sm">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
@@ -352,8 +352,8 @@ const VoiceAssistant = () => {
                                     'bg-emerald-500 animate-pulse-slow'
                         }`}></div>
 
-                    {/* Enhanced Tooltip */}
-                    <div className="absolute bottom-full right-0 mb-4 w-64 bg-gradient-to-br from-slate-800 to-slate-900 text-white p-4 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none transform group-hover:translate-y-0 translate-y-2 border border-emerald-500/20">
+                    {/* Enhanced Tooltip - Hidden on mobile */}
+                    <div className="hidden md:block absolute bottom-full right-0 mb-4 w-64 bg-gradient-to-br from-slate-800 to-slate-900 text-white p-4 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none transform group-hover:translate-y-0 translate-y-2 border border-emerald-500/20">
                         <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
                                 <Mic className="w-5 h-5 text-white" />
